@@ -1,7 +1,7 @@
 import pickle
-import numpy as np
 import pandas as pd
-from src.graphics import plot_dataset
+
+from src.graphics import plot_training
 from src.normalization import normalize_min_max
 from src.linear_regression import LinearRegression
 
@@ -33,7 +33,7 @@ def main():
     y_predictions_denormalized = y_predictions_normalized * (y_maximum - y_minimum) + y_minimum
 
     # Plotting data
-    plot_dataset(x, y, y_predictions_denormalized)
+    plot_training(x, y, y_predictions_denormalized, errors)
 
 if __name__ == "__main__":
     main()
