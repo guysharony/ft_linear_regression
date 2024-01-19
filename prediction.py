@@ -10,13 +10,5 @@ def main():
     except ValueError as e:
         sys.exit(e)
 
-    with open("models.pickle", "rb") as f:
-        thetas = pickle.load(f)
-
-    theta0 = float(thetas[0])
-    theta1 = float(thetas[1])
-
-    prediction = theta0 + (theta1 * float(x))
-    print(prediction)
 if __name__ == "__main__":
     main()
