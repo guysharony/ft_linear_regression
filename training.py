@@ -3,6 +3,7 @@ import pandas as pd
 
 from src.graphics import plot_training
 from src.normalization import normalize_min_max
+from src.normalization import denormalize_min_max
 from src.linear_regression import LinearRegression
 
 
@@ -12,25 +13,34 @@ def main():
     x = dataset["km"].values
     y = dataset["price"].values
 
+    # Mileage minimum and maximum
+    x_minimum, x_maximum = min(x), max(x)
+
+    # Prices minimum and maximum
+    y_minimum, y_maximum = min(y), max(y)
+
     # Normalizing mileages
-    x_normalized, _, _ = normalize_min_max(x)
-    y_normalized, y_minimum, y_maximum = normalize_min_max(y)
+    x_normalized = normalize_min_max(x, x_minimum, x_maximum)
+    y_normalized = normalize_min_max(y, y_minimum, y_maximum)
 
     # Initializing model
     model = LinearRegression(
         learning_rate=0.1,
-        max_iterations=1_000
+        max_iterations=1_000,
     )
 
     # Gradient descent
     errors = model.gradient_descent(x_normalized, y_normalized)
     print(f"MSE Evolution [{errors[0]}] -> [{errors[-1]}]")
 
+    # Saving parameters
+    model.save_parameters(x, y)
+
     # Predictions
     y_predictions_normalized = model.prediction(x_normalized)
 
-    # De-normalising predictions for plot
-    y_predictions_denormalized = y_predictions_normalized * (y_maximum - y_minimum) + y_minimum
+    # De-normalizing predictions
+    y_predictions_denormalized = denormalize_min_max(y_predictions_normalized, y_minimum, y_maximum)
 
     # Plotting data
     plot_training(x, y, y_predictions_denormalized, errors)
