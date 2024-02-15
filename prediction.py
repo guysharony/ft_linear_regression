@@ -11,8 +11,8 @@ def main():
             raise ValueError('Mileage should be positive')
 
         x = float(x)
-    except ValueError as e:
-        sys.exit(e)
+    except ValueError as err:
+        print(f'error: {err}')
 
     with open("models.pickle", "rb") as f:
         parameters = pickle.load(f)
