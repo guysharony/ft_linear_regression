@@ -1,21 +1,34 @@
 import sys
 import pickle
-import numpy as np
 from src.normalization import normalize_min_max
 from src.normalization import denormalize_min_max
 
 def main():
     x = input('Please enter a mileage: ')
     try:
-        if not x or float(x) < 0:
-            raise ValueError('Mileage should be positive')
+        if not x or not x.isdigit():
+            raise ValueError('Mileage should be a number.')
 
         x = float(x)
-    except ValueError as err:
-        print(f'error: {err}')
 
-    with open("models.pickle", "rb") as f:
-        parameters = pickle.load(f)
+        if not x or x < 0:
+            raise ValueError('Mileage should be positive.')
+    except ValueError as error:
+        print(f'error: {error}')
+        sys.exit(1)
+
+    try:
+        with open("models.pickle", "rb") as f:
+            parameters = pickle.load(f)
+    except FileNotFoundError:
+        print("Error: Paramaters file not found.")
+        sys.exit(1)
+    except pickle.PickleError as error:
+        print(f"Error: Failed to load parameters file{error}")
+        sys.exit(1)
+    except Exception as error:
+        print(f"Error: {error}")
+        sys.exit(1)
 
     # Normalizing input
     x_minimum = float(parameters['x_minimum'])
