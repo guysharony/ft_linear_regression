@@ -43,5 +43,6 @@ def main():
 
     # Display predicted price
     print('The price will be:', denormalized_price)
+
 if __name__ == "__main__":
     main()
