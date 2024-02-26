@@ -1,7 +1,9 @@
+import os
 import sys
 import pickle
 from src.normalization import normalize_min_max
 from src.normalization import denormalize_min_max
+
 
 def main():
     x = input('Please enter a mileage: ')
@@ -17,35 +19,29 @@ def main():
         print(f'error: {error}')
         sys.exit(1)
 
-    try:
-        with open("models.pickle", "rb") as f:
-            parameters = pickle.load(f)
-    except FileNotFoundError:
-        print("Error: Paramaters file not found.")
-        sys.exit(1)
-    except pickle.PickleError as error:
-        print(f"Error: Failed to load parameters file{error}")
-        sys.exit(1)
-    except Exception as error:
-        print(f"Error: {error}")
-        sys.exit(1)
+    parameter_keys = ['theta_0', 'theta_1', 'x_minimum', 'x_maximum', 'y_minimum', 'y_maximum']
 
-    # Normalizing input
-    x_minimum = float(parameters['x_minimum'])
-    x_maximum = float(parameters['x_maximum'])
-    normalize_input = normalize_min_max(x, x_minimum, x_maximum)
+    if not os.path.isfile('thetas.pickle'):
+        parameters = {key: 0 for key in parameter_keys}
+    else:
+        try:
+            with open("thetas.pickle", "rb") as f:
+                parameters = pickle.load(f)
+                parameters = {key: float(parameters[key]) for key in parameter_keys}
+        except Exception as error:
+            print(f"Error: {error}")
+            sys.exit(1)
+
+        # Normalizing input
+        x = normalize_min_max(x, parameters['x_minimum'], parameters['x_maximum'])
 
     # Predicting price
-    theta_0 = float(parameters['theta_0'])
-    theta_1 = float(parameters['theta_1'])
-    normalized_prediction = theta_0 + (theta_1 * normalize_input)
+    normalized_prediction = parameters['theta_0'] + (parameters['theta_1'] * x)
 
     # De-normalizing price
-    y_minimum = float(parameters['y_minimum'])
-    y_maximum = float(parameters['y_maximum'])
-    denormalized_price = denormalize_min_max(normalized_prediction, y_minimum, y_maximum)
+    denormalized_price = denormalize_min_max(normalized_prediction, parameters['y_minimum'], parameters['y_maximum'])
 
     # Display predicted price
-    print('The price will be: ', denormalized_price)
+    print('The price will be:', denormalized_price)
 if __name__ == "__main__":
     main()

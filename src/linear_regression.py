@@ -48,5 +48,5 @@ class LinearRegression:
         parameters['y_minimum'] = min(y)
         parameters['y_maximum'] = max(y)
 
-        with open("models.pickle", "wb") as f:
+        with open("thetas.pickle", "wb") as f:
             pickle.dump(parameters, f)
